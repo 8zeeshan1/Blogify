@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("./partials/head") %>
+    <title>Blogify-Profile</title>
+</head>
+<body >
+        <%- include("./partials/nav") %>
+     <div class="d-flex justify-content-center">
+        <img src="<%= userDetails.userProfile %>" class="rounded-circle" width="300px">
+    </div>
+    <div class="container d-flex justify-content-center mt-4">
+    <% if (!user || !(user._id == userDetails.userId) ) { %>
+     <div class="mt-4 d-flex justify-content-center">
+        <h5><%= userDetails.userName %></h5>
+    </div>
+    <% }else if(user && user._id==userDetails.userId){ %>
+        <form id="pfChangeBtn">
+            <div class="m-3">
+                <input class="form-control" type="file" id="formFile" name="profileImageURL">
+            </div>
+            <div class="col-12 m-4">
+                <button class="btn btn-primary" type="submit" >Change Profile</button>
+            </div>
+        </form>
+          <script>
+                document.querySelector("#pfChangeBtn").addEventListener("submit", async (event)=>{
+                    event.preventDefault();
+                    const file = event.target[0].files[0];
+                    if(!file){
+                        return;
+                    }
+                    const res = await fetch("/<%=user._id%>/changeProfile", {
+                        method: "POST",
+                        headers:{"Content-Type":"application/json"},
+                        body: JSON.stringify({
+                            fileName: Date.now()+"-"+file.name,
+                            fileType: file.type,
+                        })
+                    });
+                    const { url }  = await res.json();
+                    await fetch(url, {
+                        method: "put",
+                        headers: {"Content-Type": file.type },
+                        body: file,
+                    })
+                })
+            </script>
+    <% } %>
+    </div>
+
+    <hr>
+<div class="container">
+    <h4>Blogs</h4>
+      <% blogs.forEach(blog => { %>
+    <div class="card d-inline-flex p-2 m-1 mt-1" style="width: 18rem;">
+  <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title"><%= blog.title %></h5>
+    <a href="/blog/<%= blog._id%>" class="btn btn-primary"> View </a>
+  </div>
+</div>
+<% }) %>
+</div>
+    <%- include("./partials/scripts") %>
+</body>
+</html>

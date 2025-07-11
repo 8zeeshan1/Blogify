@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("./partials/head") %>
+    <title>Blogify</title>
+</head>
+<body style="background-color:#222f3d;">
+    <%- include("./partials/nav") %>
+
+
+    <% blogs.forEach(blog => { %>
+    <div class="card d-inline-flex p-2 m-1 mt-1" style="width: 18rem;">
+  <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title"><%= blog.title %></h5>
+    <a href="/blog/<%= blog._id %>" class="btn btn-primary"> View </a>
+  </div>
+</div>
+<% }) %>
+    <%- include("./partials/scripts") %>
+</body>
+</html>
+ 
