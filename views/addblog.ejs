@@ -8,37 +8,29 @@
     <%- include("./partials/nav") %>
 
     <form action="/blog" method="post">
-      <input type="hidden" id="keyValue" name="keyValue">
+      <input type="hidden" id="secret_url" name="secret_url">
         <div class="m-3">
   <label for="formFile" class="form-label">Cover Image</label>
   <input class="form-control" type="file" id="formFile" name="coverImageURL">
 
   <script>
-    document.querySelector("#formFile").addEventListener('change', async (event) => {
+  document.querySelector("#formFile").addEventListener('change', async(event)=>{
+    event.preventDefault();
     const file = event.target.files[0];
-   
-    //console.log(file.name);
-    //console.log(file.type);
-    const res = await fetch('/blog/metadata', {
-      method: "post",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        fileName: Date.now()+"-"+file.name,
-        fileType: file.type,
-      })
+    const formData = new FormData();
+    formData.append('file', file)
+    const res = await fetch('/blog/add-new/upload',{
+      method: "put",
+      body: formData,
     });
-    const { url, key } = await res.json();
-   document.querySelector('#keyValue').value = key;
+    const data = await res.json();
+    console.log(data);
+    if(data.message){
+      document.querySelector('#secret_url').value = data.secret_url;
+    }
+  })
+</script>
 
-   await fetch(url, {
-    method: "put",
-    headers:{
-      "Content-Type": file.type
-    },
-    body: file,
-   });
-});
-  </script>
 </div>
     <div class="form-floating m-4">
   <textarea class="form-control" id="floatingTextarea" name="title"></textarea>

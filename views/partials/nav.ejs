@@ -16,11 +16,10 @@
         </li>
 
          <li class="nav-item dropdown">
-          <a href="/<%= user._id %>"><img src="<%= userProfile %>" class="rounded-circle" width="50px"></a>
+          <a href="/<%= user._id %>"><img src="<%= //userProfile %>" class="rounded-circle" width="50px"></a>
           <button class="btn dropdown-toggle ps-0" data-bs-toggle="dropdown" aria-expanded="false">
-            <%= userName %>
+            <%= user.fullName //userName %>
           </button>
-         
 
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="/<%= user._id %>">Profile</a></li>

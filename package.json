@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "nodemon app.js",
     "dev": "nodemon index.js"
   },
   "author": "",
@@ -11,6 +11,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.842.0",
     "@aws-sdk/s3-request-presigner": "^3.842.0",
+    "busboy": "^1.6.0",
+    "cloudinary": "^2.9.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",

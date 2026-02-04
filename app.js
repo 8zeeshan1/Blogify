@@ -23,13 +23,20 @@ app.use(express.json());
 //devDependencies when we are working with development that dependencies that we want to use just in the development process and not in the deployment that dependencies are dev depencies. When we work with production dev dependencies are not installed there.
 app.use("/user", userRoutes);
 
+app.get('/favicon.ico', (req, res) => res.status(204))
 
 app.use(checkForAuthenticationCookie("token"));
 
+app.get("/", async(req, res)=>{
+    const blogs = await Blog.find({});
+    return res.render("home", {
+        blogs: blogs,
+        user: req.userName
+    });
+})
 
 app.use("/blog", blogRoutes);
 
-app.get('/favicon.ico', (req, res) => res.status(204))
 
 app.get("/:id", async(req, res)=>{
     const blogs = await Blog.find({createdBy: req.params.id });
