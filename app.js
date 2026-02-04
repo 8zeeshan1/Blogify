@@ -9,6 +9,9 @@ const blogRoutes = require("./routes/addblog");
 app.set("view engine", "ejs"); 
 app.set("views", path.resolve("./views"));
 
+const Busboy = require('busboy');
+const cloudinary = require("./service/cloudinary")
+
 const { connectMongoDB } = require("./connection");
 const cookieParser = require("cookie-parser");
 const { checkForAuthenticationCookie } = require("./middlewares/auth");
@@ -29,9 +32,10 @@ app.use(checkForAuthenticationCookie("token"));
 
 app.get("/", async(req, res)=>{
     const blogs = await Blog.find({});
+    //console.log("From / route-> user: ",req.user);
     return res.render("home", {
         blogs: blogs,
-        user: req.userName
+        user: req.user
     });
 })
 
@@ -40,36 +44,61 @@ app.use("/blog", blogRoutes);
 
 app.get("/:id", async(req, res)=>{
     const blogs = await Blog.find({createdBy: req.params.id });
-    if(blogs.length>0){
-        blogs.forEach(async blog=>{
-            blog.coverImageURL = await getObjectURL(blog.coverImageURL);
-        });
+    console.log("From /id route-> user: ",req.user);
+    // if(blogs.length>0){
+    //     blogs.forEach(async blog=>{
+    //         blog.coverImageURL = await getObjectURL(blog.coverImageURL);
+    //     });
+    // }
+    const userDetails = await User.findById(req.params.id);
+    console.log("userDetails: ",userDetails)
+    if((req.user._id).toString() !== (userDetails._id).toString() ){
+        console.log("Same nhi hai");
+    }else{
+        console.log("same hai")
     }
-    const userProfile = await User.findById(req.params.id);
     return res.render("profile", {
-        userDetails: { userProfile: await getObjectURL(userProfile.profileImage),
-                       userName: userProfile.fullName,
-                       userId: userProfile._id,
-        },
+        // userDetails: { userProfile: await getObjectURL(userProfile.profileImage),
+        //                userName: userProfile.fullName,
+        //                userId: userProfile._id,
+        // },
         blogs: blogs,
         user: req.user,
-        userName: req.userName?.fullName,
-        userProfile: req.userName?.profileImage,
+        userDetails: userDetails,
+        // userName: req.userName?.fullName,
+        // userProfile: req.userName?.profileImage,
     });
 })
 
 
-app.post("/:id/changeProfile", async (req, res)=>{
-    if(!(req.user._id === req.params.id)){
+app.put("/:id/changeProfile", async (req, res)=>{
+    console.log("yha tak to aa rha hai")
+    if(!((req.user._id).toString() === req.params.id)){
         return res.send("You are not authorize to do so");
     }
-    await User.findByIdAndUpdate((req.params.id), {
-        profileImage: `images/${req.body.fileName}`
-    });
-    const url = await putObjectURL(`images/${req.body.fileName}`, req.body.fileType);
-    return res.json({
-        url: url
-});
+
+    const busboy = Busboy({headers: req.headers});
+        busboy.on('file', (fieldName, file, fileName, encoding, mimetype)=>{
+            const cloudinaryStream = cloudinary.uploader.upload_stream(
+                {
+                    folder: 'profiles',
+                    resource_type: "auto",
+                },
+                async(error, result) => {
+                    if(error){
+                        console.error("It's an error: ", error);
+                        console.log("It's a result: ", result);
+                        return res.json("An error occured.")
+                    }
+                     await User.findByIdAndUpdate((req.params.id), {
+                        profileImage: result.secure_url
+                    }).then(()=>console.log("Profile picture Updated"))
+                    return res.json({success: true});
+                }
+            );
+            file.pipe(cloudinaryStream)
+        })
+    req.pipe(busboy)
 });
 // app.post("/:id", async(req, res)=>{
 //     if(!(req.user._id === req.params.id)){

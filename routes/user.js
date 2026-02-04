@@ -5,7 +5,7 @@ const router = Router();
 
 
 router.get("/signin", (req,res)=>{
-    res.render('signin')
+    return res.render('signin')
 });
 router.get("/signup", (req,res)=>{
     return res.render("signup")
@@ -20,6 +20,7 @@ router.post("/signup", async (req, res)=>{
     });
     return res.redirect("/");
 });
+
 router.post("/signin", async (req, res)=>{
     const { email, password } = req.body;
     try{
