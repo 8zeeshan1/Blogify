@@ -9,14 +9,30 @@
 
 
     <% blogs.forEach(blog => { %>
-    <div class="card d-inline-flex p-2 m-1 mt-1" style="width: 18rem;">
-  <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="...">
-  <div class="card-body">
-    <h5 class="card-title"><%= blog.title %></h5>
-    <a href="/blog/<%= blog._id %>" class="btn btn-primary"> View </a>
+  <div class="card d-inline-flex p-2 m-2 align-top" style="width: 18rem;">
+    
+    <img 
+      src="<%= blog.coverImageURL %>" 
+      class="card-img-top rounded"
+      style="height: 180px; object-fit: cover;"
+      alt="Blog cover"
+    >
+
+    <div class="card-body d-flex flex-column">
+      <h6 class="card-title fw-semibold">
+        <%= blog.title %>
+      </h6>
+      <a 
+        href="/blog/<%= blog._id %>" 
+        class="btn btn-primary mt-auto"
+      >
+        View
+      </a>
+    </div>
+
   </div>
-</div>
 <% }) %>
+
     <%- include("./partials/scripts") %>
 </body>
 </html>
