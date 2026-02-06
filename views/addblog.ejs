@@ -1,50 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <%- include("./partials/head") %>
+  <%- include("./partials/head") %>
     <title>Blogify-Add Blog</title>
 </head>
+
 <body>
-    <%- include("./partials/nav") %>
+  <%- include("./partials/nav") %>
 
     <form action="/blog" method="post">
       <input type="hidden" id="secret_url" name="secret_url">
-        <div class="m-3">
-  <label for="formFile" class="form-label">Cover Image</label>
-  <input class="form-control" type="file" id="formFile" name="coverImageURL">
+      <div class="m-3">
+        <label for="formFile" class="form-label">Cover Image</label>
+        <input class="form-control" type="file" id="formFile" name="coverImageURL">
 
-  <script>
-  document.querySelector("#formFile").addEventListener('change', async(event)=>{
-    event.preventDefault();
-    const file = event.target.files[0];
-    const formData = new FormData();
-    formData.append('file', file)
-    const res = await fetch('/blog/add-new/upload',{
-      method: "put",
-      body: formData,
-    });
-    const data = await res.json();
-    console.log(data);
-    if(data.message){
-      document.querySelector('#secret_url').value = data.secret_url;
-    }
-  })
-</script>
-
-</div>
-    <div class="form-floating m-4">
-  <textarea class="form-control" id="floatingTextarea" name="title"></textarea>
-  <label for="floatingTextarea">Title</label>
-</div>
-<div class="form-floating m-4">
-  <textarea class="form-control"  id="floatingTextarea2" style="height: 100px" name="body"></textarea>
-  <label for="floatingTextarea2">Body</label>
-</div>
- <div class="col-12 m-4">
-    <button class="btn btn-primary" type="submit">Add</button>
+       <!-- <div id="loading" class="d-none mt-2">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Uploading...</span>
   </div>
-</form>
+  <span class="ms-2">Uploading image...</span>
+</div> -->
+
+  
+
+
+      </div>
+      <div class="form-floating m-4">
+        <textarea required class="form-control" id="floatingTextarea" name="title"></textarea>
+        <label for="floatingTextarea">Title</label>
+      </div>
+      <div class="form-floating m-4">
+        <textarea required class="form-control" id="floatingTextarea2" style="height: 100px" name="body"></textarea>
+        <label for="floatingTextarea2">Body</label>
+      </div>
+      <div class="col-12 m-4">
+        <button id="submitBtn" class="btn btn-primary" type="submit">Add</button>
+      </div>
+    </form>
+
+    <!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4">
+      <div class="modal-body">
+        <div class="spinner-border text-primary mb-3" role="status"></div>
+        <h6>Uploading image...</h6>
+        <small>Please wait</small>
+      </div>
+    </div>
+  </div>
+</div>
 
     <%- include("./partials/scripts") %>
+         <script>
+  const fileInput = document.querySelector("#formFile");
+  const secretInput = document.querySelector("#secret_url");
+  const submitBtn = document.querySelector("#submitBtn");
+
+  const uploadModal = new bootstrap.Modal(
+    document.getElementById("uploadModal"),
+    { backdrop: "static", keyboard: false }
+  );
+
+  fileInput.addEventListener("change", async (event) => {
+    try {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      uploadModal.show();
+      submitBtn.disabled = true;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/blog/add-new/upload", {
+        method: "PUT",
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (data.message) {
+        secretInput.value = data.secret_url;
+      }
+    } catch (err) {
+      alert("Upload failed");
+      console.error(err);
+    } finally {
+      uploadModal.hide();
+      submitBtn.disabled = false;
+    }
+  });
+</script>
 </body>
+
 </html>
