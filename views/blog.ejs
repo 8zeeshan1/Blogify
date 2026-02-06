@@ -37,8 +37,10 @@
             <a href="/<%= blog.createdBy._id %>">
                 <img 
                     src="<%= blog.createdBy.profileImage %>" 
-                    width="55px" 
                     class="rounded-circle border"
+                    width="40"
+                    height="40"
+                    style="object-fit: cover;"
                 >
             </a>
             <div>
@@ -85,8 +87,10 @@
                         <a href="/<%= comment.commentedBy._id %>">
                             <img 
                                 src="<%= comment.commentedBy.profileImage %>" 
-                                width="45px" 
                                 class="rounded-circle border"
+                    width="40"
+                    height="40"
+                    style="object-fit: cover;"
                             >
                         </a>
                         <h6 class="mb-0 fw-semibold">

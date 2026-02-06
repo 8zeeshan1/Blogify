@@ -3,96 +3,130 @@
 
 <head>
     <%- include("./partials/head") %>
-        <title>Blogify-Profile</title>
+    <title>Blogify - Profile</title>
 </head>
 
-<body>
+<body class="bg-light">
+
     <%- include("./partials/nav") %>
-        <div class="d-flex justify-content-center">
-            <img src="<%= userDetails.profileImage %>" class="rounded-circle" width="300px">
-        </div>
-        <div class="container d-flex justify-content-center mt-4">
-            <% if (!user || (user._id).toString() !==(userDetails._id).toString() ) { %>
-                <div class="mt-4 d-flex justify-content-center">
-                    <h5>
+
+    <!-- Profile Header -->
+    <div class="container my-5">
+        <div class="card border-0 shadow-sm p-4 text-center">
+            <div class="d-flex justify-content-center mb-3">
+                <img 
+                    src="<%= userDetails.profileImage %>" 
+                    class="rounded-circle border shadow-sm"
+                    width="180"
+                    height="180"
+                    style="object-fit: cover;"
+                >
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <% if (!user || (user._id).toString() !== (userDetails._id).toString()) { %>
+                    <h5 class="fw-bold mb-0">
                         <%= userDetails.fullName %>
                     </h5>
-                </div>
-                <% }else if(user && (user._id).toString()===(userDetails._id).toString()){ %>
-                    <form id="pfChangeBtn">
-                        <input type="hidden" value="<%= user._id %>" id="userId">
-                        <div class="m-3">
-                            <input class="form-control" type="file" id="formFile" name="profileImageURL">
-                        </div>
-                        <div class="col-12 m-4">
-                            <button class="btn btn-primary" type="submit">Change Profile</button>
-                        </div>
-                    </form>
-                    <% } %>
-        </div>
+                <% } else if (user && (user._id).toString() === (userDetails._id).toString()) { %>
 
-        <hr>
-        <div class="container">
-            <h4>Blogs</h4>
-            <% blogs.forEach(blog=> { %>
-                <div class="card d-inline-flex p-2 m-1 mt-1" style="width: 18rem;">
-                    <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <%= blog.title %>
-                        </h5>
-                        <a href="/blog/<%= blog._id%>" class="btn btn-primary"> View </a>
+                    <form id="pfChangeBtn" class="mt-3 w-100" style="max-width: 400px;">
+                        <input type="hidden" value="<%= user._id %>" id="userId">
+
+                        <div class="mb-3">
+                            <input 
+                                class="form-control" 
+                                type="file" 
+                                id="formFile" 
+                                name="profileImageURL"
+                            >
+                        </div>
+
+                        <button class="btn btn-primary w-100" type="submit">
+                            Change Profile
+                        </button>
+                    </form>
+
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <hr class="container">
+
+    <!-- Blogs Section -->
+    <div class="container mb-5">
+        <h4 class="fw-bold mb-4">Blogs</h4>
+
+        <div class="row g-4">
+            <% blogs.forEach(blog => { %>
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="card h-100 shadow-sm border-0">
+                        <img 
+                            src="<%= blog.coverImageURL %>" 
+                            class="card-img-top"
+                            style="height: 160px; object-fit: cover;"
+                            alt="Blog cover"
+                        >
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title fw-semibold">
+                                <%= blog.title %>
+                            </h6>
+                            <a 
+                                href="/blog/<%= blog._id %>" 
+                                class="btn btn-outline-primary mt-auto"
+                            >
+                                View
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <% }) %>
+            <% }) %>
         </div>
-
-            <!-- Upload Modal -->
-<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center p-4">
-      <div class="modal-body">
-        <div class="spinner-border text-primary mb-3" role="status"></div>
-        <h6>Uploading image...</h6>
-        <small>Please wait</small>
-      </div>
     </div>
-  </div>
-</div>
 
-        <%- include("./partials/scripts") %>
-            <script>
-                const uploadModal = new bootstrap.Modal(
-                        document.querySelector("#uploadModal"),
-                        { backdrop: "static", keyboard: false }
-                    )
-                document.querySelector("#pfChangeBtn").addEventListener("submit", async (event) => {
-                    try{
-                    event.preventDefault();
-                    uploadModal.show();
-                    const userId = document.querySelector("#userId").value;
-                    console.log(userId)
-                    const file = document.querySelector("#formFile").files[0];
-                    //const file = event.target.files[0];
-                    const formData = new FormData();
-                    formData.append('file', file)
-                    await fetch(`/${userId}/changeProfile`, {
-                        method: "put",
-                        body: formData,
-                    });
-                    // const data = await res.json();
-                    // if (data.success) {
-                    //     window.location.reload();
-                    // }
-                } catch(error){
-                    alert("Something went wrong. Unable to update the profile");
-                    console.log(error);
-                } finally{
-                    uploadModal.hide();
-                    window.location.reload();
-                }
-                })
-            </script>
+    <!-- Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center p-4 border-0 shadow">
+                <div class="modal-body">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <h6 class="fw-semibold">Uploading image...</h6>
+                    <small class="text-muted">Please wait</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include("./partials/scripts") %>
+
+    <script>
+        const uploadModal = new bootstrap.Modal(
+            document.querySelector("#uploadModal"),
+            { backdrop: "static", keyboard: false }
+        )
+
+        document.querySelector("#pfChangeBtn").addEventListener("submit", async (event) => {
+            try {
+                event.preventDefault();
+                uploadModal.show();
+                const userId = document.querySelector("#userId").value;
+                const file = document.querySelector("#formFile").files[0];
+                const formData = new FormData();
+                formData.append('file', file)
+                await fetch(`/${userId}/changeProfile`, {
+                    method: "put",
+                    body: formData,
+                });
+            } catch (error) {
+                alert("Something went wrong. Unable to update the profile");
+                console.log(error);
+            } finally {
+                uploadModal.hide();
+                window.location.reload();
+            }
+        })
+    </script>
+
 </body>
-
 </html>

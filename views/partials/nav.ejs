@@ -16,7 +16,16 @@
         </li>
 
          <li class="nav-item dropdown">
-          <a href="/<%= user._id %>"><img src="<%= user.profileImage %>" class="rounded-circle" width="50px"></a>
+          <a href="/<%= user._id %>">
+    <img 
+        src="<%= user.profileImage %>" 
+        class="rounded-circle border"
+        width="40"
+        height="40"
+        style="object-fit: cover;"
+    >
+</a>
+
           <button class="btn dropdown-toggle ps-0" data-bs-toggle="dropdown" aria-expanded="false">
             <%= user.fullName //userName %>
           </button>
