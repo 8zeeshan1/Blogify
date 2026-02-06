@@ -28,26 +28,6 @@
                             <button class="btn btn-primary" type="submit">Change Profile</button>
                         </div>
                     </form>
-                    <script>
-                        document.querySelector("#pfChangeBtn").addEventListener("submit", async (event) => {
-                            event.preventDefault();
-                            const userId = document.querySelector("#userId").value;
-                            console.log(userId)
-                            const file = document.querySelector("#formFile").files[0];
-                            //const file = event.target.files[0];
-                            const formData = new FormData();
-                            formData.append('file', file)
-                            const res = await fetch(`/${userId}/changeProfile`, {
-                                method: "put",
-                                body: formData,
-                            });
-                            const data = await res.json();
-                            if(data.success){
-                                window.location.reload();
-                            }
-                            
-                        })
-                    </script>
                     <% } %>
         </div>
 
@@ -66,7 +46,53 @@
                 </div>
                 <% }) %>
         </div>
+
+            <!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4">
+      <div class="modal-body">
+        <div class="spinner-border text-primary mb-3" role="status"></div>
+        <h6>Uploading image...</h6>
+        <small>Please wait</small>
+      </div>
+    </div>
+  </div>
+</div>
+
         <%- include("./partials/scripts") %>
+            <script>
+                const uploadModal = new bootstrap.Modal(
+                        document.querySelector("#uploadModal"),
+                        { backdrop: "static", keyboard: false }
+                    )
+                document.querySelector("#pfChangeBtn").addEventListener("submit", async (event) => {
+                    try{
+                    event.preventDefault();
+                    uploadModal.show();
+                    const userId = document.querySelector("#userId").value;
+                    console.log(userId)
+                    const file = document.querySelector("#formFile").files[0];
+                    //const file = event.target.files[0];
+                    const formData = new FormData();
+                    formData.append('file', file)
+                    await fetch(`/${userId}/changeProfile`, {
+                        method: "put",
+                        body: formData,
+                    });
+                    // const data = await res.json();
+                    // if (data.success) {
+                    //     window.location.reload();
+                    // }
+                } catch(error){
+                    alert("Something went wrong. Unable to update the profile");
+                    console.log(error);
+                } finally{
+                    uploadModal.hide();
+                    window.location.reload();
+                }
+                })
+            </script>
 </body>
 
 </html>
